@@ -1,6 +1,7 @@
 ﻿#include <iostream>
 #include <stdio.h>
 #include <conio.h>
+#include <fstream>
 using namespace std;
 #include "Tasks.h"
 #include "Examples.h"
@@ -35,7 +36,7 @@ using namespace std;
   (short & 0x02 ? '1' : '0'), \
   (short & 0x01 ? '1' : '0') 
 
-unsigned char pbit(unsigned char c)
+unsigned char parbit(unsigned char c)
 {
 	unsigned char t = 1, b = 0;
 	for (int j = 0; j < 8; j++)         // обчислення біта парності
@@ -83,6 +84,7 @@ void task1() {
         cout << "RES" << endl;   
         cout << ACDB << endl;
         cout << ABCD << endl;
+		_getch();
 }
 
 void task2()
@@ -92,7 +94,7 @@ void task2()
     cout << " Data encryption using bitwise operations  \n";
 
 	char S[8][8];
-	short encoded[8][8];
+	short encripted[8][8];
 	unsigned char i, j;
 
 
@@ -138,7 +140,7 @@ void task2()
 			tmp = S[i][j] << 4;
 			tmp = tmp >> 3;
 			byte1 = byte1 | tmp;
-			byte1 = byte1 | pbit(byte1);
+			byte1 = byte1 | parbit(byte1);
 
 			byte2 = 0;
 			tmp2 = j;
@@ -148,21 +150,33 @@ void task2()
 			tmp2 = S[i][j] >> 4;
 			tmp2 = tmp2 << 4;
 			byte2 = byte2 | tmp2;
-			byte2 = byte2 | pbit(byte2);
+			byte2 = byte2 | parbit(byte2);
 
 
-			encoded[i][j] = byte1;
-			encoded[i][j] = (encoded[i][j] << 8) | byte2;
+			encripted[i][j] = byte1;
+			encripted[i][j] = (encripted[i][j] << 8) | byte2;
 		}
 		cout << endl;
 	}
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			printf(SHORT_TO_BINARY_PATTERN" | ", SHORT_TO_BINARY(encoded[i][j]));
+			printf(SHORT_TO_BINARY_PATTERN" | ", SHORT_TO_BINARY(encripted[i][j]));
 		}
 		cout << endl;
 	}
+
+	ofstream ofsb("outb.bin", ios::out | ios::binary);
+	if (!ofsb) {
+		cout << "File outb.bin not open" << endl;
+	}
+	else {
+		ofsb.write((char*)encripted, 64 * sizeof(unsigned short));
+		ofsb.close();
+		cout << "Data write to outb.bin " << endl;
+	}
+
+	_getch();
 }
 
 void task3()
