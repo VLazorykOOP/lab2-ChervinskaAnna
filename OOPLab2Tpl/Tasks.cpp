@@ -4,6 +4,50 @@
 using namespace std;
 #include "Tasks.h"
 #include "Examples.h"
+
+#define BYTE_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c"
+#define BYTE_TO_BINARY(byte)  \
+  (byte & 0x80 ? '1' : '0'), \
+  (byte & 0x40 ? '1' : '0'), \
+  (byte & 0x20 ? '1' : '0'), \
+  (byte & 0x10 ? '1' : '0'), \
+  (byte & 0x08 ? '1' : '0'), \
+  (byte & 0x04 ? '1' : '0'), \
+  (byte & 0x02 ? '1' : '0'), \
+  (byte & 0x01 ? '1' : '0') 
+
+#define SHORT_TO_BINARY_PATTERN "%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c%c"
+#define SHORT_TO_BINARY(short)  \
+  (short & 0x8000 ? '1' : '0'), \
+  (short & 0x4000 ? '1' : '0'), \
+  (short & 0x2000 ? '1' : '0'), \
+  (short & 0x1000 ? '1' : '0'), \
+  (short & 0x0800 ? '1' : '0'), \
+  (short & 0x0400 ? '1' : '0'), \
+  (short & 0x0200 ? '1' : '0'), \
+  (short & 0x0100 ? '1' : '0'), \
+  (short & 0x80 ? '1' : '0'), \
+  (short & 0x40 ? '1' : '0'), \
+  (short & 0x20 ? '1' : '0'), \
+  (short & 0x10 ? '1' : '0'), \
+  (short & 0x08 ? '1' : '0'), \
+  (short & 0x04 ? '1' : '0'), \
+  (short & 0x02 ? '1' : '0'), \
+  (short & 0x01 ? '1' : '0') 
+
+unsigned char pbit(unsigned char c)
+{
+	unsigned char t = 1, b = 0;
+	for (int j = 0; j < 8; j++)         // обчислення біта парності
+	{
+		if (c & t) {
+			if (b == 0) b = 1; else b = 0;
+		}
+		t <<= 1;
+	}
+	return b;
+}
+
 void MenuTask()
 {
     cout << "     Menu Task   \n";
@@ -39,7 +83,6 @@ void task1() {
         cout << "RES" << endl;   
         cout << ACDB << endl;
         cout << ABCD << endl;
-        _getch();
 }
 
 void task2()
@@ -48,6 +91,78 @@ void task2()
     // Data encryption using bitwise operations
     cout << " Data encryption using bitwise operations  \n";
 
+	char S[8][8];
+	short encoded[8][8];
+	unsigned char i, j;
+
+
+	for (i = 0; i < 8; i++) {
+		cout << " Input string (size <=8) \n";
+		cin.get(S[i], 8);
+		cin.get();
+	}
+
+	for (i = 0; i < 8; i++) {
+		cout << S[i] << '\n';
+	}
+
+	for (i = 0; i < 8; i++) {
+		int n = strlen(S[i]);
+		for (j = n; j < 8; j++) {
+			S[i][j] = ' ';
+		}
+	}
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			cout << S[i][j] << '|';
+		}
+		cout << endl;
+	}
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			printf(BYTE_TO_BINARY_PATTERN" | ", BYTE_TO_BINARY(S[i][j]));
+		}
+		cout << endl;
+	}
+	unsigned char tmp, tmp2, byte1, byte2;
+	char tmpChar;
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+
+			byte1 = 0;
+			tmp = i;
+			tmp = tmp << 5;
+			byte1 = byte1 | tmp;
+			tmp = S[i][j] << 4;
+			tmp = tmp >> 3;
+			byte1 = byte1 | tmp;
+			byte1 = byte1 | pbit(byte1);
+
+			byte2 = 0;
+			tmp2 = j;
+			tmp2 = tmp2 << 1;
+			byte2 = byte2 | tmp2;
+
+			tmp2 = S[i][j] >> 4;
+			tmp2 = tmp2 << 4;
+			byte2 = byte2 | tmp2;
+			byte2 = byte2 | pbit(byte2);
+
+
+			encoded[i][j] = byte1;
+			encoded[i][j] = (encoded[i][j] << 8) | byte2;
+		}
+		cout << endl;
+	}
+
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			printf(SHORT_TO_BINARY_PATTERN" | ", SHORT_TO_BINARY(encoded[i][j]));
+		}
+		cout << endl;
+	}
 }
 
 void task3()
