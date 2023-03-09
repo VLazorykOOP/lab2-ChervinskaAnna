@@ -87,16 +87,49 @@ void task1() {
 		_getch();
 }
 
-void task2()
+void WriteArrayBinFile(int n, unsigned short* arr)
+{
+	char fileName[200];
+	cout << "Input Filename:\n";
+	cin >> fileName;
+
+	//ios_base
+	ofstream bfout(fileName, ios_base::binary);
+	if (bfout.fail()) return;
+	bfout.write((const char*)&n, sizeof(int));
+	std::streamsize  cn = static_cast<std::streamsize>(n) * sizeof(unsigned short);
+	bfout.write((const char*)arr, cn);
+	bfout.close();
+}
+
+int ReadArrayBinFile(int n, unsigned short* arr)
+{
+	char fileName[200];
+	cout << "Input Filename:\n";
+	cin >> fileName;
+
+	int size = 0;
+	ifstream bfin(fileName, ios_base::binary);
+	if (bfin.fail()) return 0;
+	bfin.read((char*)&size, sizeof(int));
+	if (size <= 0) return 0;
+	if (size > n) size = n;
+	bfin.read((char*)arr, static_cast<std::streamsize>(size) * sizeof(unsigned short));
+	bfin.close();
+	// ssdhs
+	return size;
+}
+
+void encript()
 {
     // Шифрування даних з використання побітових операцій 
     // Data encryption using bitwise operations
     cout << " Data encryption using bitwise operations  \n";
 
 	char S[8][8];
-	short encripted[8][8];
+	unsigned short encripted[64];
 	unsigned char i, j;
-
+	 
 
 	for (i = 0; i < 8; i++) {
 		cout << " Input string (size <=8) \n";
@@ -153,30 +186,61 @@ void task2()
 			byte2 = byte2 | parbit(byte2);
 
 
-			encripted[i][j] = byte1;
-			encripted[i][j] = (encripted[i][j] << 8) | byte2;
+			encripted[i * 8 + j] = byte1;
+			encripted[i * 8 + j] = (encripted[i * 8 + j] << 8) | byte2;
 		}
 		cout << endl;
 	}
 
 	for (i = 0; i < 8; i++) {
 		for (j = 0; j < 8; j++) {
-			printf(SHORT_TO_BINARY_PATTERN" | ", SHORT_TO_BINARY(encripted[i][j]));
+			printf(SHORT_TO_BINARY_PATTERN" | ", SHORT_TO_BINARY(encripted[i * 8 + j]));
 		}
 		cout << endl;
 	}
 
-	ofstream ofsb("outb.bin", ios::out | ios::binary);
-	if (!ofsb) {
-		cout << "File outb.bin not open" << endl;
-	}
-	else {
-		ofsb.write((char*)encripted, 64 * sizeof(unsigned short));
-		ofsb.close();
-		cout << "Data write to outb.bin " << endl;
-	}
+	WriteArrayBinFile(64, encripted);
 
 	_getch();
+}
+
+void decript() {
+	unsigned short encripted[64];
+	char V[8][8];
+	char a, b;
+	ReadArrayBinFile(64, encripted);
+	unsigned short i, j;
+	for (int k = 0; k < 64; k++) {
+	  i = encripted[k] >> 13;
+	  j = ((encripted[k] & 0b0000000000001110) >> 1);
+	  a = (encripted[k] & 0b0001111000000000) >> 9;
+	  b = encripted[k] & 0b0000000011110000;
+	  V[i][j] = a | b;
+	}
+	cout << endl << "Decripted data: " << endl;
+	for (i = 0; i < 8; i++) {
+		for (j = 0; j < 8; j++) {
+			cout << V[i][j] << '|';
+		}
+		cout << endl;
+	}
+}
+
+void task2() {
+
+	char ch;
+	do {
+		cout << "\n  Select operation:   \n";
+		cout << "    1.  Encript \n";
+		cout << "    2.  Decript \n";
+		cout << "    3.  Exit \n";
+
+		ch = _getch();
+		switch (ch) {
+		case '1': encript(); break;
+		case '2': decript(); break;
+		}
+	} while (ch != '3');
 }
 
 void task3()
