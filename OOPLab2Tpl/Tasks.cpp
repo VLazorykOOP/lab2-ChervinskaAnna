@@ -254,7 +254,24 @@ void task3()
 void task4()
 {   // Задача із використання побітових операцій
     // The problem of using bitwise operations
-    cout << " Data encryption using structures with bit fields \n";
+    cout << " file encryption \n";
+	char S[100];
+	cout << "Enter" << endl;
+	cin.get(S, 100);
+	int n = strlen(S);
+	cout << S << endl; 
+	for (int i = 0; i < n; i++) {
+		S[i] = S[i] ^ (255 - i%256);
+	}
+	cout << S << endl;
+
+	for (int i = 0; i < n; i++) {
+		S[i] = S[i] ^ (255 - i % 256);
+	}
+	cout << S << endl;
+
+	
+	_getch();
 
 }
 
